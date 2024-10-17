@@ -237,9 +237,9 @@ void VamosJogarUmJogo(int **CampoMinado, char **Interface,int *QuantidadeBombas,
 	}
 	
 	if (BOOM == 1){
-		printf("Game Over. 😵‍💫 🙁\n");
+		printf("Game Over. 🙁\n");
 	}else{
-		printf("Parabéns, você eh fera. 😁 😎 ");
+		printf("Parabéns, você eh fera. 😎 ");
 	}
 	
 	ImprimeCampo(CampoMinado,Tamanho);
