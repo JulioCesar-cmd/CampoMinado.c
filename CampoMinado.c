@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-void TamanhoCampo (char *Opcao, int *Tamanho);
+void TamanhoCampo (char *Opcao, int *Tamanho); 
 int **CriarCampoMinado(int Tamanho);
 void The_Bomb_Has_Been_Planted(int **CampoMinado,int Tamanho,int *QuantidadeBombas);
 void CordenadasAxuliares(int **CampoMinado,int Tamanho);
@@ -14,37 +14,53 @@ void ImprimeInterface(char **Interface,int Tamanho);
 void Desalocar_Memoria_CampoMinado(int **CampoMinado, int Tamanho);
 void Desalocar_Memoria_Interface(char **Interface, int Tamanho);
 void Letreiro_Inicial (int Tamanho);
+void Letreiro_Final(int Tamanho);
+void TentarDenovo(int *JogarNovamente);
 
 
 int main(void){
 	
-	char Dificuldade [8];
-	int Tamanho;
-	int QuantidadeBombas;
-	int **CampoMinado;
-	char **Interface;
+char Dificuldade [8];
+int Tamanho;
+int QuantidadeBombas;
+int **CampoMinado;
+char **Interface;
+ int JogarNovamente;
 	
-	printf("Escolha a Dificildade : facil, medio, dificil. \n");
+    do
+    {
+
+    printf("\n");
+
+    printf("Escolha a Dificildade : facil [10x10], medio[20x20], dificil[30x30]: ");
 	
-	scanf("%100s",Dificuldade);
+    scanf("%100s",Dificuldade);
 	
-	TamanhoCampo(Dificuldade,&Tamanho);
+    TamanhoCampo(Dificuldade,&Tamanho);
 	
-	CampoMinado = CriarCampoMinado(Tamanho);
+    CampoMinado = CriarCampoMinado(Tamanho);
 	
-	The_Bomb_Has_Been_Planted(CampoMinado,Tamanho,&QuantidadeBombas);
+    The_Bomb_Has_Been_Planted(CampoMinado,Tamanho,&QuantidadeBombas);
 	
-	CordenadasAxuliares(CampoMinado,Tamanho);
+    CordenadasAxuliares(CampoMinado,Tamanho);
 	
-	Interface = MascaraCampoMinado(Tamanho);
+    Interface = MascaraCampoMinado(Tamanho);
     
     ImprimeInterface (Interface,Tamanho);
 	
-	VamosJogarUmJogo(CampoMinado,Interface,&QuantidadeBombas,Tamanho);
+    VamosJogarUmJogo(CampoMinado,Interface,&QuantidadeBombas,Tamanho);
 	   
     Desalocar_Memoria_CampoMinado(CampoMinado,Tamanho);
 
     Desalocar_Memoria_Interface(Interface,Tamanho);
+
+    printf("\nGostaria de Jogar Novamente ? Digite s/n.");
+    
+    TentarDenovo(&JogarNovamente);
+
+    } while (JogarNovamente);
+
+    printf("\nFIM !\n");
 	
 
     return 0;
@@ -66,7 +82,7 @@ void TamanhoCampo (char *Opcao, int *Tamanho){
 
 	}else{
 		printf("Entrada invalida.\n");
-		printf("Escolha a Dificildade : facil, medio, dificil: \n");
+		printf("\nEscolha a Dificildade : facil [10x10], medio[20x20], dificil[30x30]: ");
 		scanf("%s",Opcao);
 		TamanhoCampo(Opcao,Tamanho);
 	}
@@ -80,7 +96,7 @@ int **CriarCampoMinado(int Tamanho){
 	int **alocacao = malloc(Tamanho * Tamanho * sizeof(int*));
 	
 	if (alocacao == NULL){
-		printf("Memoria Insuficiente.\n");
+		printf("\nMemoria Insuficiente.\n");
 		exit(1);
 	}
 	
@@ -207,22 +223,24 @@ void VamosJogarUmJogo(int **CampoMinado, char **Interface,int *QuantidadeBombas,
 	BOOM = 0;
 	
 	while(Finalizar){
-		printf("Digite as coordenadas com x,y: \n");
-		scanf("%d,%d",&EntradaX,&EntradaY);
-		EntradaX --;
-		EntradaY --;
-		while (EntradaX < 0 || EntradaY < 0 || EntradaX > (Tamanho - 1) || EntradaY > (Tamanho - 1)){
-			printf("Coordenadas Invalidas.\nDigite as coordenadas x,y: \n");
+		printf("\nDigite as coordenadas com x,y: ");
+
+        scanf("%d,%d",&EntradaX,&EntradaY);
+
+		while (EntradaX < 1 || EntradaY < 1 || EntradaX > Tamanho || EntradaY > Tamanho){
+			printf("\nCoordenadas Invalidas.\nDigite as coordenadas com x,y: \n");
+            while (getchar () != '\n');
 			scanf("%d,%d",&EntradaX,&EntradaY);
-            EntradaX --;
-	    	EntradaY --;
 		}
+
+        EntradaX --;
+	    EntradaY --;
 		
 		if (CampoMinado[EntradaX][EntradaY] == -1){
 			Finalizar = 0;
 			BOOM  = 1;
 		}else if (Interface[EntradaX][EntradaY] != 'X'){
-			printf("Coordenada Repetetiva Insira outra: \n");			
+			printf("\nCoordenada Repetida !!!\n");			
 		}		
 		else{
 			Interface[EntradaX][EntradaY] = CampoMinado[EntradaX][EntradaY] + '0';
@@ -237,9 +255,10 @@ void VamosJogarUmJogo(int **CampoMinado, char **Interface,int *QuantidadeBombas,
 	}
 	
 	if (BOOM == 1){
-		printf("Game Over. 🙁\n");
+		printf("\n   Game Over. (╥︣﹏᷅╥)\n");
 	}else{
-		printf("Parabéns, você eh fera. 😎 ");
+    
+		printf("\n   Parabéns, você eh fera.  (•◡•) /\n");
 	}
 	
 	ImprimeCampo(CampoMinado,Tamanho);
@@ -247,13 +266,27 @@ void VamosJogarUmJogo(int **CampoMinado, char **Interface,int *QuantidadeBombas,
 }
 
 void Letreiro_Inicial (int Tamanho){
-
+   
+    printf("  ");   
     if (Tamanho == 10){
-        printf("|-----------CAMPO-MINADO-----------|\n");   
+        printf("|-----------CAMPO-MINADO---------|\n");   
     }else if (Tamanho == 20){
-        printf("|-------------------------------CAMPO-MINADO-------------------------------|\n");
+        printf("|------------------------------CAMPO-MINADO------------------------------|\n");
     }else if (Tamanho == 30){
-        printf("|--------------------------------------------------CAMPO-MINADO---------------------------------------------------|\n");
+        printf("|----------------------------------------------------CAMPO-MINADO------------------------------------------------|\n");
+    }
+
+}
+
+void Letreiro_Final(int Tamanho){
+    
+    printf("  ");   
+    if (Tamanho == 10){     
+        printf("|--------------------------------|\n");   
+    }else if (Tamanho == 20){
+        printf("|------------------------------------------------------------------------|\n");
+    }else if (Tamanho == 30){
+        printf("|----------------------------------------------------------------------------------------------------------------|\n");
     }
 
 }
@@ -262,13 +295,15 @@ void ImprimeCampo(int **CampoMinado,int Tamanho){
 	
 	int Linha,Coluna,contador;
 
+      printf("\n");
+
     Letreiro_Inicial (Tamanho);
 
     printf ("  |  1");
 	for (contador = 1; contador < Tamanho; contador++){
         printf("| %d",contador + 1);
     }
-    printf("\n");
+    printf(" |\n");
 
 	for (Linha = 0; Linha < Tamanho; Linha++){
         if (Linha + 1 >= 10 ){
@@ -283,8 +318,10 @@ void ImprimeCampo(int **CampoMinado,int Tamanho){
                printf("  %d",CampoMinado[Linha][Coluna]);
             }
 		}
-		printf("\n");
+		printf(" |\n");
 	}
+    
+    Letreiro_Final(Tamanho);
 	
 }
 
@@ -292,13 +329,15 @@ void ImprimeInterface(char **Interface,int Tamanho){
 	
 	int Linha,Coluna,contador;
 
+    printf("\n");
+
     Letreiro_Inicial (Tamanho);
 
     printf ("  |  1");
 	for (contador = 1; contador < Tamanho; contador++){
         printf("| %d",contador + 1);
     }
-    printf("\n");
+    printf(" |\n");
 
 	for (Linha = 0; Linha < Tamanho; Linha++){
         if (Linha + 1 >= 10 ){
@@ -313,8 +352,10 @@ void ImprimeInterface(char **Interface,int Tamanho){
                printf("  %c",Interface[Linha][Coluna]);
             }
 		}
-		printf("\n");
+		printf(" |\n");
 	}
+
+    Letreiro_Final(Tamanho);
 	
 }
     
@@ -340,4 +381,21 @@ void Desalocar_Memoria_Interface(char **Interface, int Tamanho){
     }
     
     free (Interface);
+}
+
+void TentarDenovo(int *JogarNovamente){
+
+    char Entrada;
+
+    while (getchar() != '\n');
+
+    scanf("%c",&Entrada);
+    if (Entrada == 's'){
+        *JogarNovamente = 1;
+    }else if (Entrada == 'n'){
+        *JogarNovamente = 0;    
+    }else{
+        printf("\nOpcao Invalida.\nDigite s/n: ");
+        TentarDenovo(JogarNovamente);      
+    }
 }
